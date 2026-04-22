@@ -1,6 +1,9 @@
 package com.example.rendertest
 
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
+import java.nio.ByteBuffer
+import java.nio.ByteOrder
 import kotlin.math.max
 import kotlin.math.min
 
@@ -44,22 +47,20 @@ data object GlobalBuffers{
         }
     }
 
-    val drawBuf = Array(maxHeight){ Array<Color>(maxWidth){ Color.Transparent }}
-    fun draw(point: ScreenPoint, color: Color){
-        drawBuf[point.y][point.x] = color
-    }
-
-    fun drawOnScreen(onDraw: (ScreenPoint, Color) -> Unit){
-        for (y in 0 until maxHeight){
-            for (x in 0 until maxWidth){
-                onDraw(ScreenPoint(x, y), drawBuf[y][x])
-            }
+    var drawBuf = ByteArray(maxWidth * maxHeight * 4)
+    fun draw(width: Int, point: ScreenPoint, color: Color){
+        if (point.x !in 0 until width || point.y !in 0 until (maxWidth * maxHeight / width)){
+            return
         }
+        val index = (point.x + point.y * width) * 4
+        val c = color.toArgb()
+        drawBuf[index]     = (c and 0xFF).toByte()
+        drawBuf[index + 1] = ((c shr 8) and 0xFF).toByte()
+        drawBuf[index + 2] = ((c shr 16) and 0xFF).toByte()
+        drawBuf[index + 3] = ((c shr 24) and 0xFF).toByte()
     }
 
     fun resetDrawBuf(){
-        drawBuf.forEach {
-            it.fill(Color.Transparent)
-        }
+        drawBuf.fill(0)
     }
 }
