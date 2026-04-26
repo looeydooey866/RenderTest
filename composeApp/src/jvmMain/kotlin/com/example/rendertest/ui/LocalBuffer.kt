@@ -1,8 +1,7 @@
-package com.example.rendertest
+package com.example.rendertest.ui
 
 import com.example.rendertest.raster.Camera
 import com.example.rendertest.raster.PixelPoint
-import com.example.rendertest.raster.ScreenPoint
 
 class LocalBuffer {
     val maxWidth = 3000

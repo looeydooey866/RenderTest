@@ -1,4 +1,4 @@
-package com.example.rendertest
+package com.example.rendertest.ui
 
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.aspectRatio
@@ -20,7 +20,6 @@ import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.input.key.type
 import cafe.adriel.voyager.core.screen.Screen
-import com.example.rendertest.raster.Camera
 import com.example.rendertest.raster.Cube
 import com.example.rendertest.raster.View
 import kotlinx.coroutines.delay
@@ -29,23 +28,23 @@ import kotlinx.coroutines.launch
 class HomeScreen: Screen {
     @Composable
     override fun Content() {
-        var constants by remember{mutableStateOf(View())}
+        var constants by remember { mutableStateOf(View()) }
 
         val focusRequester = remember { FocusRequester() }
         LaunchedEffect(Unit) {
             focusRequester.requestFocus()
         }
-        var movingFront by remember{mutableStateOf(false)}
-        var movingBack by remember{mutableStateOf(false)}
-        var movingUp by remember{mutableStateOf(false)}
-        var movingDown by remember{mutableStateOf(false)}
-        var movingLeft by remember{mutableStateOf(false)}
-        var movingRight by remember{mutableStateOf(false)}
+        var movingFront by remember { mutableStateOf(false) }
+        var movingBack by remember { mutableStateOf(false) }
+        var movingUp by remember { mutableStateOf(false) }
+        var movingDown by remember { mutableStateOf(false) }
+        var movingLeft by remember { mutableStateOf(false) }
+        var movingRight by remember { mutableStateOf(false) }
         val scope = rememberCoroutineScope()
         val step = 0.1f
-        LaunchedEffect(Unit){
+        LaunchedEffect(Unit) {
             scope.launch {
-                while (true){
+                while (true) {
                     delay(1000 / 60)
                     if (movingFront) {
                         constants = constants.translate(dz = step)
@@ -69,40 +68,47 @@ class HomeScreen: Screen {
             }
         }
 
-        Scaffold (
-            modifier = Modifier.focusRequester(focusRequester).focusable().onKeyEvent{event ->
-                if (event.type != KeyEventType.KeyDown && event.type != KeyEventType.KeyUp) return@onKeyEvent false
-                when {
-                    event.key == Key.A -> {
-                        movingLeft = (event.type == KeyEventType.KeyDown)
-                        true
+        Scaffold(
+            modifier = Modifier.focusRequester(focusRequester).focusable()
+                .onKeyEvent { event ->
+                    if (event.type != KeyEventType.Companion.KeyDown && event.type != KeyEventType.Companion.KeyUp) return@onKeyEvent false
+                    when {
+                        event.key == Key.Companion.A -> {
+                            movingLeft = (event.type == KeyEventType.Companion.KeyDown)
+                            true
+                        }
+
+                        event.key == Key.Companion.D -> {
+                            movingRight = (event.type == KeyEventType.Companion.KeyDown)
+                            true
+                        }
+
+                        event.key == Key.Companion.Spacebar -> {
+                            movingUp = (event.type == KeyEventType.Companion.KeyDown)
+                            true
+                        }
+
+                        event.key == Key.Companion.ShiftLeft -> {
+                            movingDown = (event.type == KeyEventType.Companion.KeyDown)
+                            true
+                        }
+
+                        event.key == Key.Companion.W -> {
+                            movingFront = (event.type == KeyEventType.Companion.KeyDown)
+                            true
+                        }
+
+                        event.key == Key.Companion.S -> {
+                            movingBack = (event.type == KeyEventType.Companion.KeyDown)
+                            true
+                        }
+
+                        else -> false
                     }
-                    event.key == Key.D -> {
-                        movingRight = (event.type == KeyEventType.KeyDown)
-                        true
-                    }
-                    event.key == Key.Spacebar -> {
-                        movingUp = (event.type == KeyEventType.KeyDown)
-                        true
-                    }
-                    event.key == Key.ShiftLeft -> {
-                        movingDown = (event.type == KeyEventType.KeyDown)
-                        true
-                    }
-                    event.key == Key.W -> {
-                        movingFront = (event.type == KeyEventType.KeyDown)
-                        true
-                    }
-                    event.key == Key.S -> {
-                        movingBack = (event.type == KeyEventType.KeyDown)
-                        true
-                    }
-                    else -> false
                 }
-            }
-        ){
+        ) {
             RenderScreen(
-                modifier = Modifier.fillMaxHeight().aspectRatio(16f/9f, true),
+                modifier = Modifier.Companion.fillMaxHeight().aspectRatio(16f / 9f, true),
                 view = constants,
                 solids = listOf(
                     Cube(
