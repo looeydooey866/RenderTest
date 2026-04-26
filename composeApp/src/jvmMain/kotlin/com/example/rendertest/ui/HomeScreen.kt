@@ -20,6 +20,7 @@ import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.input.key.type
 import cafe.adriel.voyager.core.screen.Screen
+import com.example.rendertest.helper.toRad
 import com.example.rendertest.raster.Cube
 import com.example.rendertest.raster.View
 import kotlinx.coroutines.delay
@@ -28,7 +29,7 @@ import kotlinx.coroutines.launch
 class HomeScreen: Screen {
     @Composable
     override fun Content() {
-        var constants by remember { mutableStateOf(View()) }
+        var constants by remember { mutableStateOf(View(f = 90f)) }
 
         val focusRequester = remember { FocusRequester() }
         LaunchedEffect(Unit) {
@@ -111,9 +112,20 @@ class HomeScreen: Screen {
                 modifier = Modifier.Companion.fillMaxHeight().aspectRatio(16f / 9f, true),
                 view = constants,
                 solids = listOf(
-                    Cube(
-                        0f, 0f, 5f, 1f
-                    )
+                    Cube( 0f, 0f, 5f, 1f ),
+                    Cube( 0f, 1f, 5f, 1f ),
+                    Cube( 0f, 2f, 5f, 1f ),
+                    Cube( 1f, 1f, 5f, 1f ),
+                    Cube( 2f, 0f, 5f, 1f ),
+                    Cube( 2f, 1f, 5f, 1f ),
+                    Cube( 2f, 2f, 5f, 1f ),
+                    Cube( 4f, 0f, 5f, 1f ),
+                    Cube( 4f, 2f, 5f, 1f ),
+                    Cube( 5f, 0f, 5f, 1f ),
+                    Cube( 5f, 1f, 5f, 1f ),
+                    Cube( 5f, 2f, 5f, 1f ),
+                    Cube( 6f, 0f, 5f, 1f ),
+                    Cube( 6f, 2f, 5f, 1f ),
                 )
             )
         }

@@ -36,6 +36,14 @@ class LocalBuffer {
     }
 
     fun resetDrawBuf(){
-        drawBuf.fill(0)
+        for (i in 0..drawBuf.size - 1){
+            if (i % 4 == 3){
+                drawBuf[i] = 0xFF.toByte()
+            }
+            else{
+                drawBuf[i] = 0
+            }
+        }
+        //drawBuf.fill(0)
     }
 }
