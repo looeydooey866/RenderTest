@@ -1,4 +1,4 @@
-package com.example.rendertest
+package com.example.rendertest.helper
 
 data object DegreeConstants{
     const val ROD = Math.PI.toFloat() / 180f
