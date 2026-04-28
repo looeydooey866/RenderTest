@@ -47,11 +47,14 @@ class HomeScreen: Screen {
         var movingDown by remember { mutableStateOf(false) }
         var movingLeft by remember { mutableStateOf(false) }
         var movingRight by remember { mutableStateOf(false) }
+        val robot = Robot()
         val scope = rememberCoroutineScope()
+        val properties = Toolkit.getDefaultToolkit().screenSize
         val step = 0.5f
         LaunchedEffect(Unit) {
             scope.launch {
                 while (true) {
+                    robot.mouseMove(properties.width / 2, properties.height / 2)
                     delay(1000 / 30)
                     if (movingFront) {
                         constants = constants.translate(dz = step)
@@ -120,8 +123,9 @@ class HomeScreen: Screen {
 
                         val change = event.changes.firstOrNull() ?: continue
 
-                        val dx = change.positionChange().x
-                        val dy = change.positionChange().y
+                        val dx = change.position.x - (properties.width / 2)
+                        val dy = change.position.y - (properties.height / 2)
+                        println("dx $dx dy $dy yaw ${constants.yaw} pitch ${constants.pitch}")
 
                         if (dx != 0f){
                             constants = constants.rotate(yaw = -dx / 1000f)
