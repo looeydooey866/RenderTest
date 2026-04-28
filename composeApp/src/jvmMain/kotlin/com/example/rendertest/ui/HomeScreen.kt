@@ -14,16 +14,23 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.input.key.type
+import androidx.compose.ui.input.pointer.onPointerEvent
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.input.pointer.positionChange
 import cafe.adriel.voyager.core.screen.Screen
+import com.example.rendertest.helper.toRad
 import com.example.rendertest.raster.Cube
 import com.example.rendertest.raster.View
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.awt.Robot
+import java.awt.Toolkit
 
 class HomeScreen: Screen {
     @Composable
@@ -41,11 +48,11 @@ class HomeScreen: Screen {
         var movingLeft by remember { mutableStateOf(false) }
         var movingRight by remember { mutableStateOf(false) }
         val scope = rememberCoroutineScope()
-        val step = 0.1f
+        val step = 0.5f
         LaunchedEffect(Unit) {
             scope.launch {
                 while (true) {
-                    delay(1000 / 60)
+                    delay(1000 / 30)
                     if (movingFront) {
                         constants = constants.translate(dz = step)
                     }
@@ -106,16 +113,59 @@ class HomeScreen: Screen {
                         else -> false
                     }
                 }
+                .pointerInput(Unit) {
+                awaitPointerEventScope {
+                    while (true) {
+                        val event = awaitPointerEvent()
+
+                        val change = event.changes.firstOrNull() ?: continue
+
+                        val dx = change.positionChange().x
+                        val dy = change.positionChange().y
+
+                        if (dx != 0f){
+                            constants = constants.rotate(yaw = -dx / 1000f)
+                        }
+                        if (dy != 0f){
+                            constants = constants.rotate(pitch = dy / 1000f)
+                        }
+                    }
+                }
+            }
         ) {
             RenderScreen(
                 modifier = Modifier.Companion.fillMaxHeight().aspectRatio(16f / 9f, true),
                 view = constants,
-                solids = listOf(
-                    Cube(
-                        0f, 0f, 5f, 1f
+                solids = generateSolid(
+                    listOf(
+                        """
+                                #..#.####.#...#....##....####.###...##..##.##...#. #.#####.
+                                #..#.#....#...#...#..#...#....#..#.#..#.#.#.#...# #....#...
+                                ####.###..#...#...#..#...###..####.#..#.#...#...##.....#...
+                                #..#.#....#...#...#..#...#....#.#..#..#.#...#...# #....#...
+                                #..#.####.###.###..##....#....#..#..##..#...#...#..#...#...
+                            """.trimIndent().split('\n'),
                     )
                 )
             )
         }
     }
+}
+
+fun generateSolid(layers: List<List<String>>): List<Cube>{
+    return layers.mapIndexed{ z, layer ->
+        generateCubes(layer, z.toFloat() + 5)
+    }.flatten()
+}
+
+fun generateCubes(layer: List<String>, z: Float): List<Cube>{
+    val res = mutableListOf<Cube>()
+    layer.asReversed().forEachIndexed { y, blocks ->
+        blocks.forEachIndexed { x, block ->
+            if (block != '.'){
+                res.add(Cube(x.toFloat(), y.toFloat(), z, 1f))
+            }
+        }
+    }
+    return res
 }

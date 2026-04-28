@@ -1,6 +1,11 @@
 package com.example.rendertest.raster
 
 import com.example.rendertest.helper.toRad
+import kotlin.math.PI
+import kotlin.math.cos
+import kotlin.math.max
+import kotlin.math.min
+import kotlin.math.sin
 import kotlin.math.tan
 
 /**
@@ -60,10 +65,21 @@ data class View(
     fun toCamera(width: Float, height: Float) = Camera(width, height, ds, f, rs, x, y, z, yaw, pitch)
 
     fun translate(dx: Float = 0f, dy: Float = 0f, dz: Float = 0f): View{
+        val syaw = sin(-(-(yaw)))
+        val cyaw = cos(-(-(yaw)))
+        val dx1 = dx * cyaw - dz * syaw
+        val dz1 = dx * syaw + dz * cyaw
         return copy(
-            x = dx + x,
+            x = dx1 + x,
             y = dy + y,
-            z = dz + z
+            z = dz1 + z
+        )
+    }
+
+    fun rotate(yaw: Float = 0f, pitch: Float = 0f): View{
+        return copy(
+            yaw = this.yaw + yaw,
+            pitch = min(max(this.pitch + pitch, -PI.toFloat() / 2), PI.toFloat() / 2)
         )
     }
 }

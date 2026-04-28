@@ -3,8 +3,10 @@ package com.example.rendertest.raster
 import androidx.compose.ui.util.fastMaxOf
 import androidx.compose.ui.util.fastMinOf
 import com.example.rendertest.helper.inv
+import kotlin.math.cos
 import kotlin.math.max
 import kotlin.math.min
+import kotlin.math.sin
 
 data class WorldPoint(
     val x: Float,
@@ -29,6 +31,18 @@ data class WorldPoint(
     fun translate(dx: Float = 0f, dy: Float = 0f, dz: Float = 0f): WorldPoint{
         return WorldPoint(x + dx, y + dy, z + dz)
     }
+
+    fun rotate(yaw: Float = 0f, pitch: Float = 0f): WorldPoint{
+        val syaw = sin(-yaw)
+        val cyaw = cos(-yaw)
+        val x1 = x * cyaw - z * syaw
+        val z1 = x * syaw + z * cyaw
+        val spitch = sin(pitch)
+        val cpitch = cos(pitch)
+        val z2 = z1 * cpitch - y * spitch
+        val y2 = z1 * spitch + y * cpitch
+        return WorldPoint(x1, y2, z2)
+    }
 }
 
 data class WorldTriangle(
@@ -46,11 +60,23 @@ data class WorldTriangle(
         )
     }
 
+    fun rotate(yaw: Float = 0f, pitch: Float = 0f): WorldTriangle{
+        return WorldTriangle(
+            p1.rotate(yaw, pitch),
+            p2.rotate(yaw, pitch),
+            p3.rotate(yaw, pitch),
+            color
+        )
+    }
+
     fun normalize(camera: Camera): WorldTriangle{
         return translate(
             -camera.x,
                     -camera.y,
                     -camera.z,
+        ).rotate(
+            camera.yaw,
+            camera.pitch,
         )
     }
 
