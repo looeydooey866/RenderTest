@@ -4,8 +4,8 @@ import com.example.rendertest.raster.Camera
 import com.example.rendertest.raster.PixelPoint
 
 class LocalBuffer {
-    val maxWidth = 3000
-    val maxHeight = 2000
+    val maxWidth = 4000
+    val maxHeight = 4000
     val depthBuf = Array(maxHeight){ FloatArray(maxWidth)}
     fun resetDepthBuf(){
         depthBuf.forEach {
@@ -17,6 +17,9 @@ class LocalBuffer {
     }
 
     fun ifNearerDepth(point: PixelPoint, z: Float, onValid: (PixelPoint) -> Unit){
+        if (point.y >= depthBuf.size || point.x >= depthBuf.first().size){
+            return
+        }
         if (depthBuf[point.y][point.x] >= z){
             onValid(point)
         }
